@@ -49,7 +49,7 @@ export class Employee {
         nullable: false,
         name: "address",
     })
-    address: Address
+    address: string
 
     @Column({
         nullable: false,
