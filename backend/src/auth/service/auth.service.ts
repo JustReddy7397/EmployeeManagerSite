@@ -11,10 +11,18 @@ export class AuthService {
   ) {
   }
 
-  async validateUser(email: string, pass: string): Promise<{ access_token: string }> {
+  async validateUser(email: string, pass: string) {
     let user: Employee = await this.usersService.findOneByEmail(email);
 
+
     // TODO :)
+
+    if (!user) {
+      user = new Employee()
+      user.email = email
+      user.password = pass
+    }
+
 
     /*if (!user) {
       throw new UnauthorizedException('Email or Password is incorrect');
@@ -24,22 +32,14 @@ export class AuthService {
       throw new UnauthorizedException('Email or Password is incorrect');
     }*/
 
-    if (!user) {
-      user = new Employee();
-      user.id = 1;
-      user.email = "aa@aa.com"
-      user.password = "123456"
-      user.firstName = "aa"
-      user.lastName = "aa"
-      user.address = "aa"
-      user.hireData = new Date()
-      user.phone = "123456"
-    }
+    const { password, ...result } = user;
+    return result;
+  }
 
-    const payload = { sub: user.id, email: user.email};
-    const accessToken = await this.jwtService.signAsync(payload)
+  async login(user: any) {
+    const payload = { email: user.email as string, sub: user.id as number };
     return {
-      access_token: accessToken
+      access_token: this.jwtService.sign(payload),
     };
   }
 
