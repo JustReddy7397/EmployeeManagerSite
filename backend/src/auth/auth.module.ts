@@ -11,25 +11,27 @@ import { AuthGuard } from './guard/auth.guard';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { SessionSerializer } from '../util/SessionSerializer';
 
 @Module({
   imports: [
-    PassportModule,
     UsersModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({
       secret: secretKey.key,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [AuthService,
+  providers: [JwtStrategy,AuthService,
     {
       provide: 'AUTH_GUARD',
       useClass: AuthGuard,
     },
-    LocalStrategy, JwtStrategy
+    LocalStrategy,
+    SessionSerializer,
   ],
   controllers: [AuthController],
   exports: [AuthService],

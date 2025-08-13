@@ -1,13 +1,14 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { secretKey } from '../../util/constants';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../util/util';
+import { AuthService } from '../service/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {
+  constructor(private jwtService: JwtService, private reflector: Reflector, private authService: AuthService) {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -17,12 +18,17 @@ export class AuthGuard implements CanActivate {
       context.getClass()
     ])
 
+    console.log("auth.guard.ts: isPublic: ", isPublic)
+
     if (isPublic) {
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const token = this.extractTokenFromHeaderOrCookie(request);
+
+    console.log("auth.guard.ts: token: ", token)
+
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -31,15 +37,27 @@ export class AuthGuard implements CanActivate {
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: secretKey.key,
       })
-    } catch {
-      throw new UnauthorizedException();
+      console.log(request['user'])
+      return true;
+    } catch (error) {
+      throw new ForbiddenException(error.message || 'session expired! Please sign In');
     }
-    return true;
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
+  private extractTokenFromHeaderOrCookie(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    if (type === 'Bearer') return token;
+    return request.cookies?.['user_token'];
   }
+
 
 }
+
+@Injectable()
+export class AuthenticatedGuard implements CanActivate {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest();
+    return req.isAuthenticated();
+  }
+}
+

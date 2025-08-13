@@ -1,39 +1,59 @@
-# frontend
+# Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.5.
 
-## Recommended IDE Setup
+## Development server
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+To start a local development server, run:
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-pnpm install
+```bash
+ng serve
 ```
 
-### Compile and Hot-Reload for Development
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-```sh
-pnpm dev
+## Code scaffolding
+
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+
+```bash
+ng generate component component-name
 ```
 
-### Type-Check, Compile and Minify for Production
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-```sh
-pnpm build
+```bash
+ng generate --help
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Building
 
-```sh
-pnpm lint
+To build the project run:
+
+```bash
+ng build
 ```
+
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
+## Running unit tests
+
+To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+
+```bash
+ng test
+```
+
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

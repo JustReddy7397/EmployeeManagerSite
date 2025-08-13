@@ -1,5 +1,6 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {Address} from "../util/types";
+import { EmployeeRank } from '../util/enums';
+import * as bcrypt from 'bcrypt';
 
 @Entity({name: "employees"})
 export class Employee {
@@ -40,21 +41,42 @@ export class Employee {
     password: string
 
     @Column({
-        nullable: false,
+        nullable: true,
         name: "phone",
     })
     phone: string
 
     @Column({
-        nullable: false,
+        nullable: true,
         name: "address",
     })
     address: string
 
     @Column({
-        nullable: false,
+        nullable: true,
         name: "hire_date"
     })
-    hireData: Date
+    hireDate: Date
+
+    @Column({
+        nullable: true,
+        name: "rank",
+        default: EmployeeRank.EMPLOYEE,
+        type: "enum",
+        enum: EmployeeRank,
+        enumName: "rank"
+    })
+    rank: EmployeeRank
+
+    @Column({
+        nullable: true,
+        name: "access_token",
+        type: "longtext"
+    })
+    access_token: string
+
+    async validatePassword(password: string) {
+        return bcrypt.compare(password, this.password);
+    }
 
 }
