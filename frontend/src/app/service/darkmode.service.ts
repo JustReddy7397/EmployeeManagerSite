@@ -10,30 +10,30 @@ export class DarkModeService {
   private readonly STORAGE_KEY = "theme";
   private readonly DARK_CLASS = "dark"
 
-  initTheme(): void {
+  public initTheme(): void {
     const savedTheme = this.getSavedTheme();
     const theme = savedTheme || this.getSystemTheme();
     this.applyTheme(theme);
   }
 
-  toggleTheme(): void {
+  public toggleTheme(): void {
     const currentTheme = this.getCurrentTheme();
     const newTheme: Theme = currentTheme === 'dark' ? 'light' : 'dark';
     this.setTheme(newTheme);
   }
 
-  setTheme(theme: Theme): void {
+  public setTheme(theme: Theme): void {
     this.applyTheme(theme);
     this.saveTheme(theme);
   }
 
-  getCurrentTheme(): Theme {
+  public getCurrentTheme(): Theme {
     return document.documentElement.classList.contains(this.DARK_CLASS)
       ? 'dark'
       : 'light';
   }
 
-  getSystemTheme(): Theme {
+  public getSystemTheme(): Theme {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
@@ -54,7 +54,7 @@ export class DarkModeService {
     localStorage.setItem(this.STORAGE_KEY, theme);
   }
 
-  getSavedTheme() {
+  public getSavedTheme() {
     const saved = localStorage.getItem(this.STORAGE_KEY);
     return saved === "dark" || saved === "light" ? saved : null;
   }

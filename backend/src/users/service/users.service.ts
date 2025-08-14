@@ -16,29 +16,29 @@ export class UsersService {
   ) {
   }
 
-  async findAll() {
+  public async findAll() {
     return await this.employeeRepo.find();
   }
 
-  async findOne(_id: string): Promise<Employee | null> {
+  public async findOne(_id: string): Promise<Employee | null> {
     return this.employeeRepo.findOne({ where: { _id: new ObjectId(_id) } });
   }
 
-  async findOneByEmail(email: string): Promise<Employee> {
+  public async findOneByEmail(email: string): Promise<Employee> {
     return await this.employeeRepo.findOne({
       where: { email: email },
     });
   }
 
-  async findOneByEmailAndPassword(email: string, password: string): Promise<Employee | null> {
+  public async findOneByEmailAndPassword(email: string, password: string): Promise<Employee | null> {
     return this.employeeRepo.findOneBy({ email, password });
   }
 
-  async findOneByName(firstName: string): Promise<Employee | null> {
+  public async findOneByName(firstName: string): Promise<Employee | null> {
     return this.employeeRepo.findOneBy({ firstName });
   }
 
-  async createEmployee(register: RegisterDto) {
+  public async createEmployee(register: RegisterDto) {
     const { email, password } = register;
     const employee = new Employee();
     employee.email = email;
@@ -54,11 +54,11 @@ export class UsersService {
     return await this.employeeRepo.save(employee);
   }
 
-  async remove(id: number): Promise<void> {
+  public async remove(id: number): Promise<void> {
     await this.employeeRepo.delete(id);
   }
 
-  async updateEmployee(employee: Employee) {
+  public async updateEmployee(employee: Employee) {
     return await this.employeeRepo.save(
       {
         ...employee,

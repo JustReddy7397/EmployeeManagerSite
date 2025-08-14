@@ -13,7 +13,7 @@ export class AuthService {
   ) {
   }
 
-  async validateUser(email: string, pass: string) {
+  public async validateUser(email: string, pass: string) {
     let user: Employee = await this.usersService.findOneByEmail(email);
 
     if (user && (await user.validatePassword(pass))) {

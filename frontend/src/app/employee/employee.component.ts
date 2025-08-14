@@ -35,7 +35,7 @@ export class EmployeeComponent implements OnInit {
   constructor(protected employeeService: EmployeeService, private authService: AuthService) {
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.isLoadingSubject.next(true);
 
     this.employeeService.fetchEmployee()
@@ -61,7 +61,7 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  updateName(newName: string): void {
+  private updateName(newName: string): void {
 
   }
 }

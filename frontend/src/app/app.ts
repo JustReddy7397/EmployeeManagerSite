@@ -82,29 +82,19 @@ export class App implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     this.darkModeService.initTheme();
   }
 
-  async onProfileClick() {
+  protected async onProfileClick() {
     await this.router.navigate(["/employee"])
   }
 
-  onSettingsClick() {
+  protected onSettingsClick() {
     console.log('Settings clicked');
   }
 
-  onLogin() {
-    this.authService.login("test@admin.com", "test").subscribe({
-      next: async (response) => {
-        await this.router.navigateByUrl("/employee")
-      },
-      error: (error) => {
-      }
-    });
-  }
-
-  onLogout() {
+  protected onLogout() {
     this.authService.logout().subscribe({
       next: async () => {
         await this.router.navigateByUrl("/");
@@ -115,7 +105,7 @@ export class App implements OnInit {
     });
   }
 
-  navigateToLogin() {
+  protected navigateToLogin() {
     this.router.navigate(['/login']).catch(err => console.error('Navigation error:', err));
   }
 }

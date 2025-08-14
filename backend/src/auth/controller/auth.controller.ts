@@ -29,7 +29,7 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signUp(@Body() registerDto: RegisterDto,
+  private async signUp(@Body() registerDto: RegisterDto,
   @Res({ passthrough: true }) response: Response) {
     const { email } = registerDto;
 
@@ -46,7 +46,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async logIn(
+  private async logIn(
     @Body() signInDTO: SignInDto,
     @Req() req: Request,
     @Res({passthrough: true}) response: Response,
@@ -74,7 +74,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('profile')
-  async getProfile(@NestRequest() request: any) {
+  private async getProfile(@NestRequest() request: any) {
     const userId = request.session['user']?.id;
     const user = await this.userService.findOne(userId);
     const { password, access_token, ...newUser } = user;
@@ -84,7 +84,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('status')
-  async status(@AuthEmployee() employee: any, @Req() request: Request) {
+  private async status(@AuthEmployee() employee: any, @Req() request: Request) {
     return {
       authenticated: true,
       user: request.session['user']
@@ -93,7 +93,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logOut(@Req() req: Request, @Res() res: Response) {
+  private async logOut(@Req() req: Request, @Res() res: Response) {
     req.session.destroy(err => {
       if (err) {
         throw new BadRequestException({

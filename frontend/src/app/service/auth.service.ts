@@ -17,7 +17,7 @@ export class AuthService {
     this.checkAuthStatus().subscribe();
   }
 
-  login(email: string, password: string): Observable<any> {
+  public login(email: string, password: string): Observable<any> {
     return this.http.post('http://localhost:3001/api/auth/login',
       { email, password },
       { withCredentials: true },
@@ -34,7 +34,7 @@ export class AuthService {
     );
   }
 
-  signup(data: EmployeeSignupData): Observable<any> {
+  public signup(data: EmployeeSignupData): Observable<any> {
     console.log(data);
     return this.http.post('http://localhost:3001/api/auth/signup', {
       firstName: data.firstName,
@@ -58,7 +58,7 @@ export class AuthService {
       );
   }
 
-  logout(): Observable<any> {
+  public logout(): Observable<any> {
     return this.http.post('http://localhost:3001/api/auth/logout',
       {},
       { withCredentials: true },
@@ -75,7 +75,7 @@ export class AuthService {
     );
   }
 
-  checkAuthStatus(): Observable<boolean> {
+  public checkAuthStatus(): Observable<boolean> {
     return this.http.get<boolean>('http://localhost:3001/api/auth/status', { withCredentials: true })
       .pipe(
         tap(() => {

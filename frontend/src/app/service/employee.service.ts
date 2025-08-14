@@ -15,14 +15,14 @@ export class EmployeeService {
   constructor(private http: HttpClient) {
   }
 
-  fetchEmployee(): Observable<any> {
+  public fetchEmployee(): Observable<any> {
     return this.http.get<EmployeeData>('http://localhost:3001/api/auth/profile', { withCredentials: true })
       .pipe(
         tap(employee => this.employeeSubject.next(employee))
       );
   }
 
-  updateEmployee(updatedEmployee: Partial<EmployeeData>) {
+  public updateEmployee(updatedEmployee: Partial<EmployeeData>) {
     return this.http.put<EmployeeData>('http://localhost:3001/profile/api/update', updatedEmployee, {
       withCredentials: true,
     }).pipe(
@@ -32,7 +32,7 @@ export class EmployeeService {
       ));
   }
 
-  clearEmployee(): void {
+  public clearEmployee(): void {
     this.employeeSubject.next(null);
   }
 

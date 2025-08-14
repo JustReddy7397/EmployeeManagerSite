@@ -90,7 +90,7 @@ export class LoginComponent {
     });
   }
 
-  async onSubmit() {
+  protected async onSubmit() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;

@@ -188,7 +188,7 @@ export class SignupComponent {
     }, { validators: this.passwordMatchValidator });
   }
 
-  passwordMatchValidator(form: FormGroup) {
+  protected passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
 
@@ -207,7 +207,7 @@ export class SignupComponent {
     return null;
   }
 
-  async onSubmit() {
+  protected async onSubmit() {
     if (this.signupForm.invalid) {
       this.signupForm.markAllAsTouched();
       return;

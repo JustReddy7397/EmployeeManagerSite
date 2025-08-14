@@ -12,11 +12,11 @@ export class SessionSerializer extends PassportSerializer {
     super()
   }
 
-  serializeUser(employee: Employee, done: CallableFunction) {
+  public serializeUser(employee: Employee, done: CallableFunction) {
     done(null, employee);
   }
 
-  async deserializeUser(employee: Employee, done: CallableFunction) {
+  public async deserializeUser(employee: Employee, done: CallableFunction) {
     try {
       const user = await this.userService.findOneByEmail(employee.email);
       console.log(user)

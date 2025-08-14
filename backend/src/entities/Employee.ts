@@ -7,55 +7,55 @@ import * as bcrypt from 'bcrypt';
 export class Employee {
 
     @ObjectIdColumn()
-    _id: ObjectId
+    public _id: ObjectId
 
     @Column({
         length: 16,
         nullable: false,
     })
-    firstName: string
+    public firstName: string
 
     @Column({
         length: 16,
         nullable: true,
     })
-    middleName: string
+    public middleName: string
 
     @Column({
         length: 16,
         nullable: false,
     })
-    lastName: string
+    public lastName: string
 
     @Column({
         nullable: false,
         name: "email",
     })
-    email: string
+    public email: string
 
     @Column({
         nullable: false,
         name: "password"
     })
-    password: string
+    public password: string
 
     @Column({
         nullable: true,
         name: "phone",
     })
-    phone: string
+    public phone: string
 
     @Column({
         nullable: true,
         name: "address",
     })
-    address: string
+    public address: string
 
     @Column({
         nullable: true,
         name: "hire_date"
     })
-    hireDate: Date
+    public hireDate: Date
 
     @Column({
         nullable: true,
@@ -65,16 +65,9 @@ export class Employee {
         enum: EmployeeRank,
         enumName: "rank"
     })
-    rank: EmployeeRank
+    public rank: EmployeeRank
 
-    @Column({
-        nullable: true,
-        name: "access_token",
-        type: "longtext"
-    })
-    access_token: string
-
-    async validatePassword(password: string): Promise<boolean> {
+    public async validatePassword(password: string): Promise<boolean> {
         if (!password || !this.password) {
             console.log(password, this.password);
             return false;

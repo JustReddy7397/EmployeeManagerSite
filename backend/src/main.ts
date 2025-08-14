@@ -2,9 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
-import { DataSource, Repository } from 'typeorm';
-import { Session } from './entities/Session';
-import { Employee } from './entities/Employee';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 
@@ -24,11 +21,6 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
-  const employeeRepo = app.get(DataSource).getRepository(Employee)
-
-  const sessionRepository: Repository<Session> = app
-    .get(DataSource)
-    .getRepository(Session);
 
   app.setGlobalPrefix("api");
 
