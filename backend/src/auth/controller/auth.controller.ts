@@ -1,8 +1,10 @@
 import {
-  BadRequestException, Body,
+  BadRequestException,
+  Body,
   Controller,
   Get,
-  Inject, Post,
+  Inject,
+  Post,
   Req,
   Request as NestRequest,
   Res,
@@ -13,12 +15,10 @@ import { AuthService } from '../service/auth.service';
 import { AuthEmployee } from '../../util/decorators/AuthEmployee';
 import { UsersService } from '../../users/service/users.service';
 import { Services } from '../../util/enums';
-import { JwtAuthGuard } from '../guard/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from '../../util/validation/SignInDto';
 import { AuthGuard } from '../guard/auth.guard';
 import { RegisterDto } from '../../util/validation/RegisterDto';
-import { LocalAuthGuard } from '../guard/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,11 +28,30 @@ export class AuthController {
               @Inject(Services.USER) private readonly userService: UsersService) {
   }
 
+  @Post('signup')
+  async signUp(@Body() registerDto: RegisterDto,
+  @Res({ passthrough: true }) response: Response) {
+    const { email } = registerDto;
+
+    // Check if user already exists
+    const existingUser = await this.userService.findOneByEmail(email);
+    if (existingUser) {
+      throw new BadRequestException({
+        message: 'Employee already exists with this email',
+        cause: 'EMPLOYEE_ALREADY_EXISTS',
+      });
+    }
+    await this.userService.createEmployee(registerDto)
+    return { message: 'Employee created successfully' };
+  }
+
   @Post('login')
   async logIn(
     @Body() signInDTO: SignInDto,
-    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
+    @Res({passthrough: true}) response: Response,
   ) {
+
     const { email, password } = signInDTO;
 
     const user = await this.userService.findOneByEmail(email);
@@ -44,18 +63,10 @@ export class AuthController {
       });
     }
 
-    const accessToken = await this.jwtService.signAsync({
+    req.session["user"] = {
+      id: user._id,
       email: user.email,
-      sub: user.id,
-    });
-
-    // Stuur JWT als HTTP-only cookie
-    res.cookie('user_token', accessToken, {
-      httpOnly: true,
-      secure: false, // Zet op true in productie (HTTPS)
-      sameSite: 'strict',
-      maxAge: 1000 * 60 * 60,
-    });
+    }
 
     return { message: 'Logged in successfully' };
   }
@@ -64,10 +75,8 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('profile')
   async getProfile(@NestRequest() request: any) {
-    const string = JSON.stringify(request.user);
-    const parse = JSON.parse(string);
-    const email = parse.email;
-    const user = await this.userService.findOneByEmail(email);
+    const userId = request.session['user']?.id;
+    const user = await this.userService.findOne(userId);
     const { password, access_token, ...newUser } = user;
     return newUser
   }
@@ -76,21 +85,26 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('status')
   async status(@AuthEmployee() employee: any, @Req() request: Request) {
-    const string = JSON.stringify(request.user);
-    const parse = JSON.parse(string);
-    const email = parse.email;
-    const { password, access_token, phone, address, hireData, ...rest } = await this.userService.findOneByEmail(email);
-    return rest;
+    return {
+      authenticated: true,
+      user: request.session['user']
+    };
   }
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logOut(@Res({ passthrough: true }) res: Response) {
-    res.cookie('user_token', '', {
-      expires: new Date(Date.now()),
-    });
-    console.log('a');
-    res.redirect('http://localhost:3000/login');
+  async logOut(@Req() req: Request, @Res() res: Response) {
+    req.session.destroy(err => {
+      if (err) {
+        throw new BadRequestException({
+          message: 'Failed to log out',
+          cause: 'LOGOUT_FAILED',
+        });
+      }
+    })
+    res.clearCookie('connect.sid');
+    res.send(true)
+    return { message: 'Logged out successfully' };
   }
 
 }

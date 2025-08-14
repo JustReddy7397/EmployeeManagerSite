@@ -1,7 +1,7 @@
 import { EmployeeRank } from '../../utilities/enums';
 
 export interface EmployeeData {
-  id: number;
+  _id?: string;
   firstName: string;
   middleName?: string;
   lastName: string;
@@ -10,4 +10,14 @@ export interface EmployeeData {
   address?: string;
   hireDate: Date
   rank: EmployeeRank;
+}
+
+export interface EmployeeSignupData {
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  password: string;
 }

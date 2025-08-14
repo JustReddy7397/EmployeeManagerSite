@@ -12,17 +12,17 @@ export class AuthGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
 
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass()
-    ])
-
-    console.log("auth.guard.ts: isPublic: ", isPublic)
-
-    if (isPublic) {
-      return true;
+    if (!request.session?.user) {
+      throw new UnauthorizedException();
     }
+
+    request.user = request.session.user;
+    return true;
+  }
+
+  /*async canActivate(context: ExecutionContext): Promise<boolean> {
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeaderOrCookie(request);
@@ -37,7 +37,6 @@ export class AuthGuard implements CanActivate {
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: secretKey.key,
       })
-      console.log(request['user'])
       return true;
     } catch (error) {
       throw new ForbiddenException(error.message || 'session expired! Please sign In');
@@ -47,8 +46,9 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeaderOrCookie(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     if (type === 'Bearer') return token;
+    console.log(request.cookies)
     return request.cookies?.['user_token'];
-  }
+  }*/
 
 
 }

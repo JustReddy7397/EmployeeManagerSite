@@ -1,25 +1,54 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { DataSource, Repository } from 'typeorm';
 import { Session } from './entities/Session';
+import { Employee } from './entities/Employee';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  }));
 
   app.use(cookieParser(process.env.COOKIE_SECRET));
 
   app.enableCors({
-    origin: 'http://localhost:3000', // Angular frontend
-    credentials: true,               // nodig voor cookies
+    origin: 'http://localhost:4200', // Your Angular app URL
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
+  const employeeRepo = app.get(DataSource).getRepository(Employee)
 
   const sessionRepository: Repository<Session> = app
     .get(DataSource)
     .getRepository(Session);
+
+  app.setGlobalPrefix("api");
+
+  app.use(
+    session({
+      secret: process.env.COOKIE_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+        secure: false,
+      },
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI || 'mongodb://localhost:27017/employeemanagersite',
+        touchAfter: 24 * 3600
+      })
+    }),
+  );
+
 
   await app.listen(3001);
 }

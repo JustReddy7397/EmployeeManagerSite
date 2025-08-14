@@ -1,30 +1,29 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { Column, Entity, ObjectIdColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { EmployeeRank } from '../util/enums';
+import { ObjectId } from 'mongodb';
 import * as bcrypt from 'bcrypt';
 
 @Entity({name: "employees"})
 export class Employee {
-    @PrimaryGeneratedColumn()
-    id: number
+
+    @ObjectIdColumn()
+    _id: ObjectId
 
     @Column({
         length: 16,
         nullable: false,
-        name: "first_name",
     })
     firstName: string
 
     @Column({
         length: 16,
         nullable: true,
-        name: "middle_name",
     })
     middleName: string
 
     @Column({
         length: 16,
         nullable: false,
-        name: "last_name",
     })
     lastName: string
 
@@ -75,8 +74,18 @@ export class Employee {
     })
     access_token: string
 
-    async validatePassword(password: string) {
-        return bcrypt.compare(password, this.password);
+    async validatePassword(password: string): Promise<boolean> {
+        if (!password || !this.password) {
+            console.log(password, this.password);
+            return false;
+        }
+
+        try {
+            return await bcrypt.compare(password, this.password);
+        } catch (error) {
+            console.error('Password validation error:', error);
+            return false;
+        }
     }
 
 }
